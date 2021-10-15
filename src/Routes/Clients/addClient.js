@@ -18,11 +18,10 @@ const addClient = async (req, res) =>{
             .min(11)
             .max(11)
             .required(),
-        birthday: Joi.string()
-            .regex(/^(\d{4})(\/|-)(\d{2})(\/|-)(\d{2})$/)
+        birthday: Joi.date()
             .required()
-    })
-
+    });
+    console.log(birthday)
     const schemaValidation = schema.validate({name, phone, cpf, birthday});
     if(schemaValidation.error) {
         res.sendStatus(400);

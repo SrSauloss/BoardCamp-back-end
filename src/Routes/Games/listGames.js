@@ -9,8 +9,9 @@ const listGames = (req, res) => {
             console.log(resul.rows);
             res.send(resul.rows);
         });   
+        return;
     }
-    
+
     connection.query('SELECT * FROM games')
     .then( resul => {
         res.send(resul.rows);
