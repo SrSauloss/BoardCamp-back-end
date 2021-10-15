@@ -21,7 +21,7 @@ const addClient = async (req, res) =>{
         birthday: Joi.date()
             .required()
     });
-    console.log(birthday)
+
     const schemaValidation = schema.validate({name, phone, cpf, birthday});
     if(schemaValidation.error) {
         res.sendStatus(400);
@@ -37,7 +37,6 @@ const addClient = async (req, res) =>{
     connection.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday])
     .then(() => {
         res.sendStatus(201);
-        console.log("adicionando cliente");
     })
 
 }
