@@ -1,7 +1,7 @@
 import connection from "../../Bd/connection.js";
 import Joi from "joi";
 
-const addCategories = (req, res) => {
+const addCategories = async (req, res) => {
 
     const name = req.body.name;
     
@@ -16,20 +16,17 @@ const addCategories = (req, res) => {
         return;
     }
 
-    const existCategorie = connection.query('SELECT * FROM categories WHERE name = $1 LIMIT 1', [name]);
-    existCategorie.then( resu => {
-        
-        if(resu.rows.length !== 0) {
-            res.sendStatus(409); 
-            return;
-        }
+    const existCategorie = await connection.query('SELECT * FROM categories WHERE name = $1 LIMIT 1', [name]);
+    if(existCategorie.rows.length !== 0) {
+        res.sendStatus(409); 
+        return;
+    }
 
-        connection.query('INSERT INTO categories (name) VALUES ($1)', [name])
-        .then(resul => {
-            res.sendStatus(201);
-            console.log("incluindo categoria");
-        });
-    })
+    connection.query('INSERT INTO categories (name) VALUES ($1)', [name])
+    .then(resul => {
+        res.sendStatus(201);
+        console.log("incluindo categoria");
+    });
 }
 
 export default addCategories;
