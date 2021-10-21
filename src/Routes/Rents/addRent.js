@@ -27,7 +27,7 @@ const addRent = async (req, res) => {
     const originalPrice = daysRented * game.rows[0].pricePerDay;
     console.log(originalPrice);
  
-    const ren = await connection.query('SELECT * FROM rentals WHERE "gameId" = $1', [gameId]);
+    const ren = await connection.query('SELECT * FROM rentals WHERE "gameId" = $1 AND "returnDate" IS NULL', [gameId]);
     console.log(ren.rows);
     if(ren.rows.length >= game.rows[0].stockTotal) {
         res.sendStatus(400);
