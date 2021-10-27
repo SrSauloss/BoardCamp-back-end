@@ -34,8 +34,8 @@ const addRent = async (req, res) => {
         return;
     }
 
-    connection.query( 'INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee") VALUES ($1, $2, $3,$4, $5, $6, $7)',
-        [customerId, gameId, rentDate, daysRented, null, originalPrice, null])
+    connection.query( 'INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "originalPrice") VALUES ($1, $2, $3,$4, $5)',
+        [customerId, gameId, rentDate, daysRented, originalPrice])
     .then(resul => {
         res.sendStatus(201);
     });
