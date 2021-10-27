@@ -1,51 +1,33 @@
 import connection from "../../Bd/connection.js";
+import dayjs from "dayjs";
 
 const addRent = async (req, res) => {
 
-    const { customerId, gameId, daysRented } = req.body;
+    try{
+        const { customerId, gameId, daysRented } = req.body;
+        if(daysRented <= 0) return res.sendStatus(400);
 
-    if(daysRented <= 0) {
-        res.sendStatus(400);
-        return;
-    }
+        const client = await connection.query('SELECT * FROM customers WHERE id = $1', [customerId]);
+        if(!client.rows[0]) return res.sendStatus(400);
 
-    const client = await connection.query('SELECT * FROM customers WHERE id = $1', [customerId]);
-    //console.log(client.rows[0])
-    if(!client.rows[0]) {
-        res.sendStatus(400);
-        return;
-    }
+        const game = await connection.query('SELECT * FROM games WHERE id = $1', [gameId]);
+        if(!game.rows[0]) return res.sendStatus(400);
+    
+        const rentDate = dayjs(new Date()).format("YYYY-MM-DD");
+        const originalPrice = daysRented * game.rows[0].pricePerDay;
+       
+        const rental = await connection.query('SELECT * FROM rentals WHERE "gameId" = $1 AND "returnDate" IS NULL', [gameId]);
+        if(rental.rows.length >= game.rows[0].stockTotal) return res.sendStatus(400);
 
-    const game = await connection.query('SELECT * FROM games WHERE id = $1', [gameId]);
-    //console.log(game.rows[0])
-    if(!game.rows[0]) {
-        res.sendStatus(400);
-        return;
-    }
-
-    const rentDate = new Date();
-    const originalPrice = daysRented * game.rows[0].pricePerDay;
-    console.log(originalPrice);
- 
-    const ren = await connection.query('SELECT * FROM rentals WHERE "gameId" = $1 AND "returnDate" IS NULL', [gameId]);
-    console.log(ren.rows);
-    if(ren.rows.length >= game.rows[0].stockTotal) {
-        res.sendStatus(400);
-        return;
-    }
-
-    connection.query( 'INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "originalPrice") VALUES ($1, $2, $3,$4, $5)',
-        [customerId, gameId, rentDate, daysRented, originalPrice])
-    .then(resul => {
+        await connection.query(`
+            INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "originalPrice") 
+            VALUES ($1, $2, $3,$4, $5)`
+            ,[customerId, gameId, rentDate, daysRented, originalPrice]);
+            
         res.sendStatus(201);
-    });
-
-    //customerId, gameId, rentDate, daysRented, returnDate, originalPrice, delayFee   
-
-
-
-
-   // res.sendStatus(201);
+    }catch{
+        res.sendStatus(500);
+    }
 }
 
 export default addRent;

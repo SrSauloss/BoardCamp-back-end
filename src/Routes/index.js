@@ -4,6 +4,7 @@ import gamesRoutes from "./Games/routes.js";
 import rentRoutes from "./Rents/routes.js";
 
 const routes = (app) => {
+    
     categoriesRoutes(app);
     gamesRoutes(app);
     clientsRoutes(app);

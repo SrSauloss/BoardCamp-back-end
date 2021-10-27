@@ -3,30 +3,26 @@ import Joi from "joi";
 
 const addCategories = async (req, res) => {
 
-    const name = req.body.name;
-    
-    const schema = Joi.object({
-        name: Joi.string()
-            .required()
-    });  
-    const schemaValidation = schema.validate({name});
+    try{
+        
+        const name = req.body.name;
+        const schema = Joi.object({
+            name: Joi.string()
+                .required()
+        });  
 
-    if(schemaValidation.error) {
-        res.sendStatus(400); 
-        return;
-    }
+        const schemaValidation = schema.validate({name});
+        if(schemaValidation.error) return res.sendStatus(400); 
 
-    const existCategorie = await connection.query('SELECT * FROM categories WHERE name = $1 LIMIT 1', [name]);
-    if(existCategorie.rows.length !== 0) {
-        res.sendStatus(409); 
-        return;
-    }
+        const existCategorie = await connection.query('SELECT * FROM categories WHERE name = $1 LIMIT 1', [name]);
+        if(existCategorie.rows.length !== 0) return res.sendStatus(409); 
 
-    connection.query('INSERT INTO categories (name) VALUES ($1)', [name])
-    .then(resul => {
+        await connection.query('INSERT INTO categories (name) VALUES ($1)', [name])
         res.sendStatus(201);
-        console.log("incluindo categoria");
-    });
+    }catch{
+        res.sendStatus(500);
+    }
+
 }
 
 export default addCategories;

@@ -1,11 +1,13 @@
 import connection from "../../Bd/connection.js";
 
-const listCategories = (req, res) => {
-
-    connection.query('SELECT * FROM categories')
-    .then(resul => {
-        res.send(resul.rows);
-    })
+const listCategories = async (req, res) => {
+    
+    try{
+       await connection.query('SELECT * FROM categories')
+       res.send(resul.rows);
+    }catch{
+        res.sendStatus(500);
+    }
 }
 
 export default listCategories;
